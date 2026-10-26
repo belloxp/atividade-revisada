@@ -1,0 +1,132 @@
+### Teste da Rota Raíz
+GET http://localhost:3000/
+Content-Type: application/json
+
+### ======================================================
+### AUTENTICAÇÃO
+### ======================================================
+
+### Cadastrar Cliente (rota pública - usada para criar o primeiro acesso)
+POST http://localhost:3000/cliente
+Content-Type: application/json
+
+{
+  "nome": "Carlos Silva",
+  "email": "carlos@gmail.com",
+  "senha": "abc123",
+  "cpf": "12345678901",
+  "telefone": "11999990001"
+}
+
+### Login (retorna o token da sessão - validade de 90 minutos)
+# @name login
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "email": "carlos@gmail.com",
+  "senha": "abc123"
+}
+
+### Login com senha errada (deve retornar 401)
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "email": "carlos@gmail.com",
+  "senha": "senhaErrada"
+}
+
+### ======================================================
+### CLIENTE (CRUD) - exige token no header Authorization
+### ======================================================
+
+### Listar Clientes
+GET http://localhost:3000/clientes
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+### Consultar Cliente por ID
+GET http://localhost:3000/cliente/1
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+### Atualizar Cliente
+PUT http://localhost:3000/cliente/1
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Carlos Silva Atualizado",
+  "email": "carlos@gmail.com",
+  "telefone": "11988887777"
+}
+
+### Deletar Cliente
+DELETE http://localhost:3000/cliente/2
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+### Acesso sem token (deve retornar 401)
+GET http://localhost:3000/clientes
+Content-Type: application/json
+
+### ======================================================
+### CONSOLE
+### ======================================================
+
+### Cadastrar Console (vinculado ao cliente, número de série criptografado)
+POST http://localhost:3000/console
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "modelo": "PlayStation 5",
+  "marca": "Sony",
+  "numeroSerie": "PS5-2024-ABC123",
+  "tipoServico": "Limpeza e troca de pasta térmica",
+  "codCliente": 1
+}
+
+### Listar Consoles
+GET http://localhost:3000/consoles
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+### Consultar Console por termo (número de série)
+GET http://localhost:3000/console/PS5
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+### ======================================================
+### AGENDAMENTO
+### ======================================================
+
+### Cadastrar Agendamento (vinculado ao cliente e console)
+POST http://localhost:3000/agendamento
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "data": "2026-11-10",
+  "hora": "14:30:00",
+  "codCliente": 1,
+  "codConsole": 1
+}
+
+### Listar Agendamentos (ordenado por data)
+GET http://localhost:3000/agendamentos
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+### Atualizar Agendamento
+PUT http://localhost:3000/agendamento/1
+Authorization: {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "data": "2026-11-15",
+  "hora": "10:00:00",
+  "codCliente": 1,
+  "codConsole": 1
+}
